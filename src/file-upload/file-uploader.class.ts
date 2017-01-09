@@ -31,6 +31,7 @@ export interface FileUploaderOptions {
   disableMultipart?:boolean;
   itemAlias?: string;
   authTokenHeader?: string;
+  addFilenameToUrl?: boolean;
 }
 
 export class FileUploader {
@@ -335,7 +336,20 @@ export class FileUploader {
       this._onCancelItem(item, response, xhr.status, headers);
       this._onCompleteItem(item, response, xhr.status, headers);
     };
-    xhr.open(item.method, item.url, true);
+    
+        
+    if(this.options.addFilenameToUrl)
+    {
+      let filename = item.file.name;
+      let url=item.url + "/" + filename; 
+      xhr.open(item.method, url, true);
+      xhr.setRequestHeader("file", filename);
+    }else{
+      xhr.open(item.method, item.url, true);
+    }
+    
+    
+    
     xhr.withCredentials = item.withCredentials;
     // todo
     /*item.headers.map((value, name) => {
@@ -346,6 +360,7 @@ export class FileUploader {
         xhr.setRequestHeader(header.name, header.value);
       }
     }
+
     if (this.authToken) {
       xhr.setRequestHeader(this.authTokenHeader, this.authToken);
     }
